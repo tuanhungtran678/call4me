@@ -1,0 +1,181 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial;
+}
+
+body{
+  background:
+    linear-gradient(
+      135deg,
+      #0f0f0f,
+      #13151f,
+      #1c1f2e
+    );
+
+  min-height:100vh;
+
+  color:white;
+
+  display:flex;
+  flex-direction:column;
+
+  align-items:center;
+
+  padding:20px;
+}
+
+.topbar{
+  width:100%;
+  max-width:1300px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  margin-bottom:20px;
+
+  padding:20px;
+
+  border-radius:25px;
+
+  background:rgba(255,255,255,0.05);
+
+  backdrop-filter:blur(20px);
+
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+.logo{
+  font-size:35px;
+  font-weight:900;
+
+  background:linear-gradient(
+    45deg,
+    #00d9ff,
+    #6a5cff,
+    #ff4fd8
+  );
+
+  background-clip:text;
+  -webkit-background-clip:text;
+
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+}
+
+.room{
+  opacity:.7;
+}
+
+.videos{
+  width:100%;
+  max-width:1300px;
+
+  display:grid;
+  grid-template-columns:1fr 1fr;
+
+  gap:20px;
+}
+
+.videoBox{
+  position:relative;
+
+  background:black;
+
+  border-radius:30px;
+
+  overflow:hidden;
+
+  border:2px solid rgba(255,255,255,0.08);
+
+  aspect-ratio:16/9;
+}
+
+video{
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+}
+
+.nameTag{
+  position:absolute;
+
+  bottom:15px;
+  left:15px;
+
+  padding:10px 16px;
+
+  border-radius:100px;
+
+  background:rgba(0,0,0,.6);
+
+  backdrop-filter:blur(10px);
+}
+
+.controls{
+  position:fixed;
+
+  bottom:25px;
+
+  display:flex;
+  gap:15px;
+
+  padding:15px 20px;
+
+  border-radius:100px;
+
+  background:rgba(255,255,255,.05);
+
+  backdrop-filter:blur(20px);
+
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.controlBtn{
+  width:65px;
+  height:65px;
+
+  border:none;
+
+  border-radius:50%;
+
+  cursor:pointer;
+
+  font-size:26px;
+
+  background:#1f2330;
+
+  color:white;
+
+  transition:.2s;
+}
+
+.controlBtn:hover{
+  transform:scale(1.08);
+}
+
+.leave{
+  background:#ff3b3b;
+}
+
+@media(max-width:900px){
+
+  .videos{
+    grid-template-columns:1fr;
+  }
+
+  .topbar{
+    flex-direction:column;
+    gap:10px;
+    text-align:center;
+  }
+
+  .controlBtn{
+    width:58px;
+    height:58px;
+  }
+
+}
