@@ -1,221 +1,122 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
   <title>Call4me</title>
 
-  <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial;
-    }
-
-    body{
-      background:#0f0f0f;
-      color:white;
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:20px;
-    }
-
-    h1{
-      margin-bottom:20px;
-      color:#00d9ff;
-      font-size:40px;
-    }
-
-    .top{
-      display:flex;
-      gap:10px;
-      margin-bottom:20px;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-
-    input{
-      padding:12px;
-      border:none;
-      border-radius:10px;
-      background:#1e1e1e;
-      color:white;
-      width:220px;
-    }
-
-    button{
-      padding:12px 20px;
-      border:none;
-      border-radius:10px;
-      cursor:pointer;
-      font-weight:bold;
-    }
-
-    .join{
-      background:#00d9ff;
-      color:black;
-    }
-
-    .leave{
-      background:#ff3b3b;
-      color:white;
-    }
-
-    .videos{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:20px;
-      width:100%;
-      max-width:1200px;
-    }
-
-    video{
-      width:100%;
-      border-radius:20px;
-      background:black;
-      aspect-ratio:16/9;
-      object-fit:cover;
-      border:2px solid #222;
-    }
-
-    @media(max-width:800px){
-      .videos{
-        grid-template-columns:1fr;
-      }
-    }
-  </style>
+  <link
+    rel="stylesheet"
+    href="style.css"
+  />
 </head>
+
 <body>
 
-  <h1>Call4me</h1>
+  <div class="topbar">
 
-  <div class="top">
-    <input id="roomInput" placeholder="Nhập mã phòng">
+    <div>
+      <div class="logo">
+        Call4me
+      </div>
 
-    <button class="join" onclick="joinRoom()">
-      Tham gia
-    </button>
+      <div class="room">
+        Room:
+        <span id="roomText"></span>
+      </div>
+    </div>
 
-    <button class="leave" onclick="leaveCall()">
-      Rời phòng
-    </button>
+    <div id="username"></div>
+
   </div>
 
   <div class="videos">
-    <video id="localVideo" autoplay muted playsinline></video>
-    <video id="remoteVideo" autoplay playsinline></video>
+
+    <div class="videoBox">
+
+      <video
+        id="localVideo"
+        autoplay
+        muted
+        playsinline
+      ></video>
+
+      <div class="nameTag">
+        You
+      </div>
+
+    </div>
+
+    <div class="videoBox">
+
+      <video
+        id="remoteVideo"
+        autoplay
+        playsinline
+      ></video>
+
+      <div class="nameTag">
+        Remote User
+      </div>
+
+    </div>
+
   </div>
 
-  <script src="http://localhost:3001/socket.io/socket.io.js"></script>
+  <div class="controls">
 
-  <script>
-    const socket = io("http://localhost:3001");
+    <button
+      class="controlBtn"
+      id="micBtn"
+    >
+      🎤
+    </button>
 
-    const localVideo = document.getElementById("localVideo");
-    const remoteVideo = document.getElementById("remoteVideo");
+    <button
+      class="controlBtn"
+      id="camBtn"
+    >
+      📷
+    </button>
 
-    let localStream;
-    let peerConnection;
-    let roomId;
+    <button
+      class="controlBtn"
+      id="shareBtn"
+    >
+      🖥️
+    </button>
 
-    const configuration = {
-      iceServers: [
-        {
-          urls: "stun:stun.l.google.com:19302"
-        }
-      ]
-    };
+    <button
+      class="controlBtn leave"
+      onclick="location.reload()"
+    >
+      ❌
+    </button>
 
-    async function startMedia() {
-      localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-      });
+  </div>
 
-      localVideo.srcObject = localStream;
-    }
+  <audio
+    id="joinSound"
+    src="sounds/join.mp3"
+  ></audio>
 
-    function createPeerConnection() {
-      peerConnection = new RTCPeerConnection(configuration);
+  <audio
+    id="leaveSound"
+    src="sounds/leave.mp3"
+  ></audio>
 
-      localStream.getTracks().forEach(track => {
-        peerConnection.addTrack(track, localStream);
-      });
+  <script src="/socket.io/socket.io.js"></script>
 
-      peerConnection.ontrack = (event) => {
-        remoteVideo.srcObject = event.streams[0];
-      };
+  <script src="webrtc.js"></script>
 
-      peerConnection.onicecandidate = (event) => {
-        if(event.candidate){
-          socket.emit("ice-candidate", event.candidate, roomId);
-        }
-      };
-    }
-
-    async function joinRoom() {
-      roomId = document.getElementById("roomInput").value;
-
-      if(!roomId){
-        alert("Nhập mã phòng");
-        return;
-      }
-
-      await startMedia();
-
-      socket.emit("join-room", roomId);
-    }
-
-    socket.on("user-connected", async () => {
-      createPeerConnection();
-
-      const offer = await peerConnection.createOffer();
-
-      await peerConnection.setLocalDescription(offer);
-
-      socket.emit("offer", offer, roomId);
-    });
-
-    socket.on("offer", async (offer) => {
-      createPeerConnection();
-
-      await peerConnection.setRemoteDescription(offer);
-
-      const answer = await peerConnection.createAnswer();
-
-      await peerConnection.setLocalDescription(answer);
-
-      socket.emit("answer", answer, roomId);
-    });
-
-    socket.on("answer", async (answer) => {
-      await peerConnection.setRemoteDescription(answer);
-    });
-
-    socket.on("ice-candidate", async (candidate) => {
-      try{
-        await peerConnection.addIceCandidate(candidate);
-      }catch(err){
-        console.error(err);
-      }
-    });
-
-    function leaveCall(){
-      if(peerConnection){
-        peerConnection.close();
-      }
-
-      if(localStream){
-        localStream.getTracks().forEach(track => track.stop());
-      }
-
-      localVideo.srcObject = null;
-      remoteVideo.srcObject = null;
-    }
-  </script>
+  <script src="app.js"></script>
 
 </body>
+
 </html>
