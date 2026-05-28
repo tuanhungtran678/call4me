@@ -1,11 +1,28 @@
-/*VIDEO GRID */
+/* VIDEO GRID */
 
 const videoGrid =
   document.getElementById(
     "videoGrid"
   );
 
-/* CREATE VIDEO CARD */
+/* CHAT */
+
+const messages =
+  document.getElementById(
+    "messages"
+  );
+
+const messageInput =
+  document.getElementById(
+    "messageInput"
+  );
+
+const sendBtn =
+  document.getElementById(
+    "sendBtn"
+  );
+
+/* CREATE VIDEO */
 
 function createVideoCard(
   socketId,
@@ -21,7 +38,9 @@ function createVideoCard(
   }
 
   const box =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   box.className =
     "videoBox";
@@ -65,7 +84,7 @@ function createVideoCard(
 
 }
 
-/* REMOVE VIDEO CARD */
+/* REMOVE VIDEO */
 
 function removeVideoCard(
   socketId
@@ -86,22 +105,22 @@ function removeVideoCard(
 
 }
 
-/* VIDEO LAYOUT */
+/* LAYOUT */
 
 function updateVideoLayout() {
 
-  const totalVideos =
+  const total =
     document.querySelectorAll(
       ".videoBox"
     ).length;
 
-  if (totalVideos <= 2) {
+  if (total <= 2) {
 
     videoGrid.style.gridTemplateColumns =
       "1fr 1fr";
 
   } else if (
-    totalVideos <= 4
+    total <= 4
   ) {
 
     videoGrid.style.gridTemplateColumns =
@@ -116,14 +135,7 @@ function updateVideoLayout() {
 
 }
 
-/* CHAT */
-
-const messages =
-  document.getElementById(
-    "messages"
-  );
-
-/* ADD MESSAGE */
+/* MESSAGE */
 
 function addMessage(
   username,
@@ -137,7 +149,8 @@ function addMessage(
     );
 
   const self =
-    username === window.username;
+    username ===
+    window.username;
 
   div.className =
     self
@@ -148,6 +161,7 @@ function addMessage(
     <strong>${username}</strong>
     <br>
     ${text}
+
     <div
       style="
         opacity:.6;
@@ -168,7 +182,7 @@ function addMessage(
 
 }
 
-/* SYSTEM MESSAGE */
+/* SYSTEM */
 
 function showSystemMessage(
   text
@@ -182,7 +196,8 @@ function showSystemMessage(
   div.className =
     "systemMessage";
 
-  div.innerText = text;
+  div.innerText =
+    text;
 
   messages.appendChild(
     div
@@ -193,7 +208,7 @@ function showSystemMessage(
 
 }
 
-/* PARTICIPANTS */
+/* COUNTS */
 
 function updateParticipantCount(
   count
@@ -216,8 +231,6 @@ function updateParticipantCount(
 
 }
 
-/* ONLINE COUNT */
-
 function updateOnlineCount(
   count
 ) {
@@ -231,89 +244,22 @@ function updateOnlineCount(
 
   element.innerText =
     count +
-    (
-      count === 1
-        ? " online"
-        : " online"
-    );
+    " online";
 
 }
 
-/* REACTIONS */
+/* REACTION */
 
 function showReaction(
   username,
   emoji
 ) {
 
-  const reaction =
-    document.createElement(
-      "div"
-    );
-
-  reaction.innerHTML = `
-    ${username}: ${emoji}
-  `;
-
-  reaction.style.position =
-    "fixed";
-
-  reaction.style.top =
-    "100px";
-
-  reaction.style.left =
-    "50%";
-
-  reaction.style.transform =
-    "translateX(-50%)";
-
-  reaction.style.padding =
-    "14px 20px";
-
-  reaction.style.borderRadius =
-    "100px";
-
-  reaction.style.background =
-    "rgba(0,0,0,.75)";
-
-  reaction.style.backdropFilter =
-    "blur(10px)";
-
-  reaction.style.fontSize =
-    "24px";
-
-  reaction.style.zIndex =
-    "99999";
-
-  reaction.style.animation =
-    "fadeReaction 2s forwards";
-
-  document.body.appendChild(
-    reaction
+  showNotification(
+    username +
+    ": " +
+    emoji
   );
-
-  setTimeout(() => {
-
-    reaction.remove();
-
-  }, 2000);
-
-}
-
-/* TYPING */
-
-function showTyping(
-  text
-) {
-
-  const typing =
-    document.getElementById(
-      "typingText"
-    );
-
-  if (!typing) return;
-
-  typing.innerText = text;
 
 }
 
@@ -334,10 +280,10 @@ function showNotification(
   notif.style.position =
     "fixed";
 
-  notif.style.right =
+  notif.style.top =
     "20px";
 
-  notif.style.top =
+  notif.style.right =
     "20px";
 
   notif.style.padding =
@@ -347,7 +293,7 @@ function showNotification(
     "16px";
 
   notif.style.background =
-    "rgba(20,20,25,.9)";
+    "rgba(20,20,25,.92)";
 
   notif.style.border =
     "1px solid rgba(255,255,255,.08)";
@@ -370,7 +316,7 @@ function showNotification(
 
 }
 
-/* SPEAKING EFFECT */
+/* SPEAKING */
 
 function setSpeaking(
   socketId,
@@ -400,18 +346,6 @@ function setSpeaking(
 
 }
 
-/* CHAT INPUT */
-
-const messageInput =
-  document.getElementById(
-    "messageInput"
-  );
-
-const sendBtn =
-  document.getElementById(
-    "sendBtn"
-  );
-
 /* SEND MESSAGE */
 
 function sendMessage() {
@@ -426,7 +360,8 @@ function sendMessage() {
     text
   );
 
-  messageInput.value = "";
+  messageInput.value =
+    "";
 
   socket.emit(
     "typing",
@@ -435,7 +370,7 @@ function sendMessage() {
 
 }
 
-/* BUTTON */
+/* SEND BUTTON */
 
 sendBtn.onclick =
   sendMessage;
@@ -457,7 +392,7 @@ messageInput.addEventListener(
   }
 );
 
-/* TYPING DETECTION */
+/* TYPING */
 
 let typingTimeout;
 
@@ -475,14 +410,17 @@ messageInput.addEventListener(
     );
 
     typingTimeout =
-      setTimeout(() => {
+      setTimeout(
+        () => {
 
-        socket.emit(
-          "typing",
-          false
-        );
+          socket.emit(
+            "typing",
+            false
+          );
 
-      }, 1200);
+        },
+        1200
+      );
 
   }
 );

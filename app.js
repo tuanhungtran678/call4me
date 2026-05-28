@@ -1,109 +1,139 @@
-const socket = io();
+/* ROOM */
 
-const localVideo = document.getElementById("localVideo");
-const remoteVideo = document.getElementById("remoteVideo");
-
-const roomText = document.getElementById("roomText");
-const usernameText = document.getElementById("username");
-
-const micBtn = document.getElementById("micBtn");
-const camBtn = document.getElementById("camBtn");
-const shareBtn = document.getElementById("shareBtn");
-
-let roomId = location.hash.substring(1);
+let roomId =
+  location.hash.substring(1);
 
 if (!roomId) {
-  roomId = crypto.randomUUID();
 
-  location.hash = roomId;
+  roomId =
+    crypto.randomUUID();
+
+  location.hash =
+    roomId;
+
 }
 
-roomText.innerText = roomId;
+/* USERNAME */
 
 const username =
-  localStorage.getItem("username") ||
-  prompt("Tên của bạn") ||
+  localStorage.getItem(
+    "username"
+  ) ||
+  prompt(
+    "Tên của bạn"
+  ) ||
   "Guest";
 
-localStorage.setItem("username", username);
+/* GLOBAL */
 
-usernameText.innerText = username;
+window.username =
+  username;
 
-let micEnabled = true;
-let camEnabled = true;
+/* SAVE */
+
+localStorage.setItem(
+  "username",
+  username
+);
+
+/* UI */
+
+document.getElementById(
+  "roomText"
+).innerText = roomId;
+
+document.getElementById(
+  "username"
+).innerText = username;
+
+/* BUTTONS */
+
+const micBtn =
+  document.getElementById(
+    "micBtn"
+  );
+
+const camBtn =
+  document.getElementById(
+    "camBtn"
+  );
+
+const shareBtn =
+  document.getElementById(
+    "shareBtn"
+  );
+
+const leaveBtn =
+  document.getElementById(
+    "leaveBtn"
+  );
+
+/* START */
 
 async function startApp() {
+
   await startMedia();
 
-  socket.emit("join-room", {
-    roomId,
-    username
-  });
+  joinRoom();
+
+  showSystemMessage(
+    "Joined room 🔥"
+  );
+
 }
 
-micBtn.onclick = () => {
-  micEnabled = !micEnabled;
+/* MIC */
 
-  localStream.getAudioTracks()[0].enabled =
-    micEnabled;
+micBtn.onclick =
+  () => {
 
-  micBtn.innerText = micEnabled ? "🎤" : "🔇";
-};
+    const enabled =
+      toggleMic();
 
-camBtn.onclick = () => {
-  camEnabled = !camEnabled;
+    micBtn.innerText =
+      enabled
+        ? "🎤"
+        : "🔇";
 
-  localStream.getVideoTracks()[0].enabled =
-    camEnabled;
-
-  camBtn.innerText = camEnabled ? "📷" : "🚫";
-};
-
-shareBtn.onclick = async () => {
-  const screen =
-    await navigator.mediaDevices.getDisplayMedia({
-      video: true
-    });
-
-  const screenTrack =
-    screen.getVideoTracks()[0];
-
-  const sender =
-    peerConnection
-      .getSenders()
-      .find(s =>
-        s.track.kind === "video"
-      );
-
-  sender.replaceTrack(screenTrack);
-
-  screenTrack.onended = () => {
-    sender.replaceTrack(
-      localStream.getVideoTracks()[0]
-    );
   };
-};
 
-socket.on("user-connected", async () => {
-  await createOffer();
-});
+/* CAMERA */
 
-socket.on("offer", async offer => {
-  await handleOffer(offer);
-});
+camBtn.onclick =
+  () => {
 
-socket.on("answer", async answer => {
-  await handleAnswer(answer);
-});
+    const enabled =
+      toggleCamera();
 
-socket.on("ice-candidate", async candidate => {
-  await handleCandidate(candidate);
-});
+    camBtn.innerText =
+      enabled
+        ? "📷"
+        : "🚫";
 
-socket.on("user-disconnected", () => {
-  remoteVideo.srcObject = null;
+  };
 
-  new Audio("sounds/leave.mp3").play();
-});
+/* SHARE */
+
+shareBtn.onclick =
+  async () => {
+
+    await startScreenShare();
+
+    showSystemMessage(
+      "Screen sharing started 🖥️"
+    );
+
+  };
+
+/* LEAVE */
+
+leaveBtn.onclick =
+  () => {
+
+    location.reload();
+
+  };
+
+/* START APP */
 
 startApp();
