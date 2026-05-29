@@ -1,20 +1,59 @@
-/* VIDEO GRID */
+/* =========================================
+   CALL4ME — UI SYSTEM
+========================================= */
 
-const videoGrid =
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const roomIdText =
   document.getElementById(
-    "videoGrid"
+    "roomId"
   );
 
-/* CHAT */
-
-const messages =
+const copyRoomBtn =
   document.getElementById(
-    "messages"
+    "copyRoomBtn"
   );
 
-const messageInput =
+const leaveBtn =
   document.getElementById(
-    "messageInput"
+    "leaveBtn"
+  );
+
+const participantCount =
+  document.getElementById(
+    "participantCount"
+  );
+
+const toggleMicBtn =
+  document.getElementById(
+    "toggleMicBtn"
+  );
+
+const toggleCameraBtn =
+  document.getElementById(
+    "toggleCameraBtn"
+  );
+
+const screenShareBtn =
+  document.getElementById(
+    "screenShareBtn"
+  );
+
+const reactionBtn =
+  document.getElementById(
+    "reactionBtn"
+  );
+
+const chatToggleBtn =
+  document.getElementById(
+    "chatToggleBtn"
+  );
+
+const chatInput =
+  document.getElementById(
+    "chatInput"
   );
 
 const sendBtn =
@@ -22,367 +61,365 @@ const sendBtn =
     "sendBtn"
   );
 
-/* CREATE VIDEO */
+const chatMessages =
+  document.getElementById(
+    "chatMessages"
+  );
 
-function createVideoCard(
-  socketId,
-  username = "User"
+const typingIndicator =
+  document.getElementById(
+    "typingIndicator"
+  );
+
+const reactionContainer =
+  document.getElementById(
+    "reactionContainer"
+  );
+
+const participantsList =
+  document.getElementById(
+    "participantsList"
+  );
+
+/* =========================================
+   ROOM
+========================================= */
+
+const roomId =
+  location.hash.replace(
+    "#",
+    ""
+  ) || "public-room";
+
+roomIdText.innerText =
+  roomId;
+
+/* =========================================
+   STATES
+========================================= */
+
+let micEnabled = true;
+let cameraEnabled = true;
+let isTyping = false;
+
+/* =========================================
+   SOUNDS
+========================================= */
+
+const sounds = {
+
+  click:
+    new Audio(
+      "https://actions.google.com/sounds/v1/cartoon/pop.ogg"
+    ),
+
+  join:
+    new Audio(
+      "https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"
+    ),
+
+  message:
+    new Audio(
+      "https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"
+    )
+
+};
+
+function playSound(
+  sound
 ) {
 
   if (
-    document.getElementById(
-      "box_" + socketId
-    )
-  ) {
-    return;
-  }
+    !sounds[sound]
+  ) return;
 
-  const box =
-    document.createElement(
-      "div"
-    );
+  sounds[sound].currentTime =
+    0;
 
-  box.className =
-    "videoBox";
+  sounds[sound]
+    .play()
 
-  box.id =
-    "box_" + socketId;
-
-  box.innerHTML = `
-    <video
-      id="video_${socketId}"
-      autoplay
-      playsinline
-    ></video>
-
-    <div class="videoOverlay">
-
-      <div class="nameTag">
-        ${username}
-      </div>
-
-      <div class="videoActions">
-
-        <button class="miniBtn">
-          🎤
-        </button>
-
-        <button class="miniBtn">
-          📷
-        </button>
-
-      </div>
-
-    </div>
-  `;
-
-  videoGrid.appendChild(
-    box
-  );
-
-  updateVideoLayout();
-
-}
-
-/* REMOVE VIDEO */
-
-function removeVideoCard(
-  socketId
-) {
-
-  const element =
-    document.getElementById(
-      "box_" + socketId
-    );
-
-  if (element) {
-
-    element.remove();
-
-  }
-
-  updateVideoLayout();
-
-}
-
-/* LAYOUT */
-
-function updateVideoLayout() {
-
-  const total =
-    document.querySelectorAll(
-      ".videoBox"
-    ).length;
-
-  if (total <= 2) {
-
-    videoGrid.style.gridTemplateColumns =
-      "1fr 1fr";
-
-  } else if (
-    total <= 4
-  ) {
-
-    videoGrid.style.gridTemplateColumns =
-      "1fr 1fr";
-
-  } else {
-
-    videoGrid.style.gridTemplateColumns =
-      "repeat(auto-fit,minmax(300px,1fr))";
-
-  }
-
-}
-
-/* MESSAGE */
-
-function addMessage(
-  username,
-  text,
-  time = ""
-) {
-
-  const div =
-    document.createElement(
-      "div"
-    );
-
-  const self =
-    username ===
-    window.username;
-
-  div.className =
-    self
-      ? "message self"
-      : "message other";
-
-  div.innerHTML = `
-    <strong>${username}</strong>
-    <br>
-    ${text}
-
-    <div
-      style="
-        opacity:.6;
-        font-size:12px;
-        margin-top:6px;
-      "
-    >
-      ${time}
-    </div>
-  `;
-
-  messages.appendChild(
-    div
-  );
-
-  messages.scrollTop =
-    messages.scrollHeight;
-
-}
-
-/* SYSTEM */
-
-function showSystemMessage(
-  text
-) {
-
-  const div =
-    document.createElement(
-      "div"
-    );
-
-  div.className =
-    "systemMessage";
-
-  div.innerText =
-    text;
-
-  messages.appendChild(
-    div
-  );
-
-  messages.scrollTop =
-    messages.scrollHeight;
-
-}
-
-/* COUNTS */
-
-function updateParticipantCount(
-  count
-) {
-
-  const element =
-    document.getElementById(
-      "participantCount"
-    );
-
-  if (!element) return;
-
-  element.innerText =
-    count +
-    (
-      count === 1
-        ? " participant"
-        : " participants"
+    .catch(
+      () => {}
     );
 
 }
 
-function updateOnlineCount(
-  count
-) {
+/* =========================================
+   COPY ROOM
+========================================= */
 
-  const element =
-    document.getElementById(
-      "onlineCount"
+copyRoomBtn.onclick =
+  async () => {
+
+    await navigator
+      .clipboard
+      .writeText(
+        location.href
+      );
+
+    copyRoomBtn.innerText =
+      "✅ Copied";
+
+    playSound(
+      "click"
     );
 
-  if (!element) return;
+    setTimeout(
+      () => {
 
-  element.innerText =
-    count +
-    " online";
+        copyRoomBtn.innerText =
+          "📋 Copy Room";
 
-}
+      },
 
-/* REACTION */
+      2000
+    );
 
-function showReaction(
-  username,
+  };
+
+/* =========================================
+   LEAVE ROOM
+========================================= */
+
+leaveBtn.onclick =
+  () => {
+
+    playSound(
+      "click"
+    );
+
+    document.body.animate(
+
+      [
+        {
+          opacity:1,
+          transform:
+            "scale(1)"
+        },
+
+        {
+          opacity:0,
+          transform:
+            "scale(1.03)"
+        }
+
+      ],
+
+      {
+        duration:500,
+        fill:"forwards"
+      }
+
+    );
+
+    setTimeout(
+      () => {
+
+        location.href =
+          "./home-screen/home.html";
+
+      },
+
+      450
+    );
+
+  };
+
+/* =========================================
+   MIC
+========================================= */
+
+toggleMicBtn.onclick =
+  () => {
+
+    micEnabled =
+      !micEnabled;
+
+    toggleMicBtn.innerText =
+      micEnabled
+        ? "🎤"
+        : "🔇";
+
+    toggleMicBtn.classList.toggle(
+      "active",
+      micEnabled
+    );
+
+    pulseButton(
+      toggleMicBtn
+    );
+
+    playSound(
+      "click"
+    );
+
+  };
+
+/* =========================================
+   CAMERA
+========================================= */
+
+toggleCameraBtn.onclick =
+  () => {
+
+    cameraEnabled =
+      !cameraEnabled;
+
+    toggleCameraBtn.innerText =
+      cameraEnabled
+        ? "📷"
+        : "🚫";
+
+    toggleCameraBtn.classList.toggle(
+      "active",
+      cameraEnabled
+    );
+
+    pulseButton(
+      toggleCameraBtn
+    );
+
+    playSound(
+      "click"
+    );
+
+  };
+
+/* =========================================
+   SCREEN SHARE
+========================================= */
+
+screenShareBtn.onclick =
+  async () => {
+
+    pulseButton(
+      screenShareBtn
+    );
+
+    screenShareBtn.classList.toggle(
+      "active"
+    );
+
+    playSound(
+      "click"
+    );
+
+    try {
+
+      await navigator
+        .mediaDevices
+        .getDisplayMedia({
+          video:true
+        });
+
+      showNotification(
+        "🖥️ Screen sharing started"
+      );
+
+    } catch {
+
+      showNotification(
+        "❌ Screen sharing cancelled"
+      );
+
+    }
+
+  };
+
+/* =========================================
+   REACTIONS
+========================================= */
+
+const reactions =
+  [
+    "🔥",
+    "😂",
+    "🎉",
+    "😎",
+    "🚀",
+    "💀",
+    "❤️",
+    "👏"
+  ];
+
+reactionBtn.onclick =
+  () => {
+
+    const emoji =
+      reactions[
+        Math.floor(
+          Math.random() *
+          reactions.length
+        )
+      ];
+
+    spawnReaction(
+      emoji
+    );
+
+    addSystemMessage(
+      `Reaction sent ${emoji}`
+    );
+
+    playSound(
+      "click"
+    );
+
+  };
+
+function spawnReaction(
   emoji
 ) {
 
-  showNotification(
-    username +
-    ": " +
-    emoji
-  );
-
-}
-
-/* NOTIFICATION */
-
-function showNotification(
-  text
-) {
-
-  const notif =
+  const div =
     document.createElement(
       "div"
     );
 
-  notif.innerText =
-    text;
+  div.className =
+    "reaction";
 
-  notif.style.position =
-    "fixed";
+  div.innerText =
+    emoji;
 
-  notif.style.top =
-    "20px";
+  div.style.left =
+    Math.random() *
+    90 +
+    "%";
 
-  notif.style.right =
-    "20px";
-
-  notif.style.padding =
-    "14px 18px";
-
-  notif.style.borderRadius =
-    "16px";
-
-  notif.style.background =
-    "rgba(20,20,25,.92)";
-
-  notif.style.border =
-    "1px solid rgba(255,255,255,.08)";
-
-  notif.style.backdropFilter =
-    "blur(10px)";
-
-  notif.style.zIndex =
-    "99999";
-
-  document.body.appendChild(
-    notif
-  );
-
-  setTimeout(() => {
-
-    notif.remove();
-
-  }, 3000);
-
-}
-
-/* SPEAKING */
-
-function setSpeaking(
-  socketId,
-  speaking = true
-) {
-
-  const box =
-    document.getElementById(
-      "box_" + socketId
+  reactionContainer
+    .appendChild(
+      div
     );
 
-  if (!box) return;
+  setTimeout(
+    () => {
 
-  if (speaking) {
+      div.remove();
 
-    box.classList.add(
-      "speaking"
-    );
+    },
 
-  } else {
-
-    box.classList.remove(
-      "speaking"
-    );
-
-  }
-
-}
-
-/* SEND MESSAGE */
-
-function sendMessage() {
-
-  const text =
-    messageInput.value.trim();
-
-  if (!text) return;
-
-  socket.emit(
-    "send-message",
-    text
-  );
-
-  messageInput.value =
-    "";
-
-  socket.emit(
-    "typing",
-    false
+    4000
   );
 
 }
 
-/* SEND BUTTON */
+/* =========================================
+   CHAT
+========================================= */
 
 sendBtn.onclick =
   sendMessage;
 
-/* ENTER */
-
-messageInput.addEventListener(
+chatInput.addEventListener(
   "keydown",
+
   event => {
 
     if (
-      event.key === "Enter"
+      event.key ===
+      "Enter"
     ) {
 
       sendMessage();
@@ -392,35 +429,399 @@ messageInput.addEventListener(
   }
 );
 
-/* TYPING */
-
-let typingTimeout;
-
-messageInput.addEventListener(
+chatInput.addEventListener(
   "input",
+
   () => {
 
-    socket.emit(
-      "typing",
-      true
-    );
+    if (
+      !isTyping
+    ) {
 
-    clearTimeout(
-      typingTimeout
-    );
+      isTyping =
+        true;
 
-    typingTimeout =
+      typingIndicator.style.opacity =
+        1;
+
       setTimeout(
         () => {
 
-          socket.emit(
-            "typing",
-            false
-          );
+          isTyping =
+            false;
+
+          typingIndicator.style.opacity =
+            0;
 
         },
-        1200
+
+        1400
       );
+
+    }
 
   }
 );
+
+function sendMessage() {
+
+  const message =
+    chatInput.value.trim();
+
+  if (!message)
+    return;
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+  div.className =
+    "chatMessage self";
+
+  div.innerHTML =
+    `
+    <div class="chatAvatar">
+      😎
+    </div>
+
+    <div class="chatBubble">
+      ${message}
+    </div>
+    `;
+
+  chatMessages.appendChild(
+    div
+  );
+
+  autoScrollChat();
+
+  chatInput.value =
+    "";
+
+  playSound(
+    "message"
+  );
+
+}
+
+/* =========================================
+   AUTO SCROLL
+========================================= */
+
+function autoScrollChat() {
+
+  chatMessages.scrollTop =
+    chatMessages.scrollHeight;
+
+}
+
+/* =========================================
+   NOTIFICATIONS
+========================================= */
+
+function showNotification(
+  text
+) {
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+  div.style.position =
+    "fixed";
+
+  div.style.top =
+    "24px";
+
+  div.style.left =
+    "50%";
+
+  div.style.transform =
+    "translateX(-50%)";
+
+  div.style.padding =
+    "14px 20px";
+
+  div.style.borderRadius =
+    "18px";
+
+  div.style.background =
+    "rgba(0,0,0,.65)";
+
+  div.style.backdropFilter =
+    "blur(18px)";
+
+  div.style.zIndex =
+    "9999";
+
+  div.style.fontWeight =
+    "700";
+
+  div.style.animation =
+    "glowPulse 2s infinite";
+
+  div.innerText =
+    text;
+
+  document.body
+    .appendChild(
+      div
+    );
+
+  setTimeout(
+    () => {
+
+      div.remove();
+
+    },
+
+    2500
+  );
+
+}
+
+/* =========================================
+   BUTTON PULSE
+========================================= */
+
+function pulseButton(
+  button
+) {
+
+  button.animate(
+
+    [
+      {
+        transform:
+          "scale(1)"
+      },
+
+      {
+        transform:
+          "scale(1.18)"
+      },
+
+      {
+        transform:
+          "scale(1)"
+      }
+
+    ],
+
+    {
+      duration:260
+    }
+
+  );
+
+}
+
+/* =========================================
+   PARTICIPANTS
+========================================= */
+
+const fakeParticipants =
+  [
+    "DevUser",
+    "GamingPro",
+    "MusicLover",
+    "WebRTC Master"
+  ];
+
+fakeParticipants.forEach(
+  (
+    user,
+    index
+  ) => {
+
+    setTimeout(
+      () => {
+
+        addParticipant(
+          user
+        );
+
+      },
+
+      index * 900
+    );
+
+  }
+);
+
+function addParticipant(
+  name
+) {
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+  div.className =
+    "participantCard";
+
+  div.innerHTML =
+    `
+    <div class="participantAvatar">
+      😎
+    </div>
+
+    <div class="participantMeta">
+
+      <div class="participantName">
+        ${name}
+      </div>
+
+      <div class="participantStatus">
+        Connected
+      </div>
+
+    </div>
+    `;
+
+  participantsList.appendChild(
+    div
+  );
+
+  participantCount.innerText =
+    participantsList.children
+      .length;
+
+  showNotification(
+    `👋 ${name} joined`
+  );
+
+  playSound(
+    "join"
+  );
+
+}
+
+/* =========================================
+   CHAT TOGGLE
+========================================= */
+
+chatToggleBtn.onclick =
+  () => {
+
+    document
+      .querySelector(
+        ".chatPanel"
+      )
+
+      .classList.toggle(
+        "hidden"
+      );
+
+    playSound(
+      "click"
+    );
+
+  };
+
+/* =========================================
+   KEYBOARD SHORTCUTS
+========================================= */
+
+document.addEventListener(
+  "keydown",
+
+  event => {
+
+    if (
+      event.target.tagName ===
+      "INPUT"
+    ) return;
+
+    switch (
+      event.key.toLowerCase()
+    ) {
+
+      case "m":
+
+        toggleMicBtn.click();
+
+        break;
+
+      case "v":
+
+        toggleCameraBtn.click();
+
+        break;
+
+      case "r":
+
+        reactionBtn.click();
+
+        break;
+
+      case "f":
+
+        if (
+          document.fullscreenElement
+        ) {
+
+          document.exitFullscreen();
+
+        } else {
+
+          document.documentElement
+            .requestFullscreen();
+
+        }
+
+        break;
+
+    }
+
+  }
+);
+
+/* =========================================
+   SYSTEM MESSAGE
+========================================= */
+
+function addSystemMessage(
+  text
+) {
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+  div.className =
+    "chatMessage";
+
+  div.innerHTML =
+    `
+    <div class="chatAvatar">
+      ⚡
+    </div>
+
+    <div class="chatBubble">
+      ${text}
+    </div>
+    `;
+
+  chatMessages.appendChild(
+    div
+  );
+
+  autoScrollChat();
+
+}
+
+/* =========================================
+   INIT
+========================================= */
+
+showNotification(
+  "🚀 Connected to room"
+);
+
+typingIndicator.style.opacity =
+  0;

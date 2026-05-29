@@ -14,92 +14,170 @@
 
   <link
     rel="stylesheet"
-    href="style.css"
+    href="./styles/style.css"
   />
 
 </head>
 
 <body>
 
-  <!-- TOP BAR -->
+  <!-- =========================================
+       BACKGROUND
+  ========================================= -->
 
-  <div class="topBar">
+  <div class="bgBlob blob1"></div>
+  <div class="bgBlob blob2"></div>
+  <div class="bgBlob blob3"></div>
 
-    <div class="leftTop">
+  <!-- =========================================
+       TOP BAR
+  ========================================= -->
 
-      <div class="logo">
+  <header class="topBar">
+
+    <div class="topLeft">
+
+      <div class="appLogo">
         Call4me
       </div>
 
-      <div
-        class="roomText"
-        id="roomText"
-      >
-        room
+      <div class="roomInfo">
+
+        <div class="roomLabel">
+          Current Room
+        </div>
+
+        <div
+          id="roomId"
+          class="roomId"
+        >
+          loading...
+        </div>
+
       </div>
 
     </div>
 
-    <div class="rightTop">
+    <div class="topCenter">
 
-      <!-- USER -->
+      <div class="liveBadge">
+        LIVE
+      </div>
 
-      <div class="userProfile">
+      <div class="participantInfo">
 
-        <img
-          id="userAvatar"
-          class="userAvatar"
-          src=""
-          alt="avatar"
-        />
+        👥
+        <span id="participantCount">
+          1
+        </span>
+        participants
 
-        <div class="userInfo">
+      </div>
 
-          <div
-            id="username"
-            class="username"
-          >
-            User
+    </div>
+
+    <div class="topRight">
+
+      <button
+        id="copyRoomBtn"
+        class="topBtn"
+      >
+        📋 Copy Room
+      </button>
+
+      <button
+        id="leaveBtn"
+        class="topBtn danger"
+      >
+        ❌ Leave
+      </button>
+
+    </div>
+
+  </header>
+
+  <!-- =========================================
+       MAIN LAYOUT
+  ========================================= -->
+
+  <main class="callLayout">
+
+    <!-- =========================================
+         PARTICIPANTS
+    ========================================= -->
+
+    <aside class="participantsPanel">
+
+      <div class="panelTitle">
+        Participants 👥
+      </div>
+
+      <div
+        id="participantsList"
+        class="participantsList"
+      >
+
+        <!-- SELF -->
+
+        <div class="participantCard speaking">
+
+          <div class="participantAvatar">
+            😎
           </div>
 
-          <div
-            id="onlineCount"
-            class="onlineCount"
-          >
-            online
+          <div class="participantMeta">
+
+            <div class="participantName">
+              You
+            </div>
+
+            <div class="participantStatus">
+              Speaking...
+            </div>
+
           </div>
 
         </div>
 
       </div>
 
-      <!-- LOGOUT -->
+    </aside>
 
-      <button
-        id="logoutBtn"
-        class="logoutBtn"
-      >
-        Logout
-      </button>
+    <!-- =========================================
+         VIDEO AREA
+    ========================================= -->
 
-    </div>
+    <section class="videoSection">
 
-  </div>
+      <!-- MAIN VIDEO -->
 
-  <!-- MAIN -->
+      <div class="mainVideoCard">
 
-  <div class="mainLayout">
+        <video
+          id="remoteVideo"
+          autoplay
+          playsinline
+        ></video>
 
-    <!-- VIDEOS -->
+        <div class="videoOverlay">
 
-    <div
-      class="videoGrid"
-      id="videoGrid"
-    >
+          <div class="videoUser">
 
-      <!-- LOCAL -->
+            🌐 Remote User
 
-      <div class="videoBox">
+          </div>
+
+          <div class="videoStatus">
+            Connected
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- LOCAL VIDEO -->
+
+      <div class="localVideoCard">
 
         <video
           id="localVideo"
@@ -108,60 +186,103 @@
           playsinline
         ></video>
 
-        <div class="videoOverlay">
+        <div class="localLabel">
+          You
+        </div>
 
-          <div class="nameTag">
-            You
+      </div>
+
+      <!-- CONTROLS -->
+
+      <div class="controlsBar">
+
+        <button
+          id="toggleMicBtn"
+          class="controlBtn"
+        >
+          🎤
+        </button>
+
+        <button
+          id="toggleCameraBtn"
+          class="controlBtn"
+        >
+          📷
+        </button>
+
+        <button
+          id="screenShareBtn"
+          class="controlBtn"
+        >
+          🖥️
+        </button>
+
+        <button
+          id="reactionBtn"
+          class="controlBtn"
+        >
+          😎
+        </button>
+
+        <button
+          id="chatToggleBtn"
+          class="controlBtn"
+        >
+          💬
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- =========================================
+         CHAT PANEL
+    ========================================= -->
+
+    <aside class="chatPanel">
+
+      <div class="panelTitle">
+        Live Chat 💬
+      </div>
+
+      <!-- CHAT MESSAGES -->
+
+      <div
+        id="chatMessages"
+        class="chatMessages"
+      >
+
+        <div class="chatMessage self">
+
+          <div class="chatAvatar">
+            😎
+          </div>
+
+          <div class="chatBubble">
+            Welcome to Call4me 🔥
           </div>
 
         </div>
 
       </div>
 
-    </div>
-
-    <!-- CHAT -->
-
-    <div class="chatPanel">
-
-      <!-- HEADER -->
-
-      <div class="chatHeader">
-
-        <div>
-          Chat 💬
-        </div>
-
-        <div
-          id="participantCount"
-        >
-          1 participant
-        </div>
-
-      </div>
-
-      <!-- MESSAGES -->
-
-      <div
-        class="messages"
-        id="messages"
-      ></div>
-
       <!-- TYPING -->
 
       <div
-        id="typingText"
-        class="typingText"
-      ></div>
+        id="typingIndicator"
+        class="typingIndicator"
+      >
+        Someone is typing...
+      </div>
 
       <!-- INPUT -->
 
       <div class="chatInputArea">
 
         <input
+          id="chatInput"
           type="text"
-          id="messageInput"
-          placeholder="Type a message..."
+          placeholder="Type message..."
         />
 
         <button
@@ -172,60 +293,38 @@
 
       </div>
 
-    </div>
+    </aside>
 
-  </div>
+  </main>
 
-  <!-- CONTROLS -->
+  <!-- =========================================
+       REACTIONS
+  ========================================= -->
 
-  <div class="controls">
+  <div
+    id="reactionContainer"
+    class="reactionContainer"
+  ></div>
 
-    <button
-      id="micBtn"
-      class="controlBtn"
-    >
-      🎤
-    </button>
+  <!-- =========================================
+       SCRIPTS
+  ========================================= -->
 
-    <button
-      id="camBtn"
-      class="controlBtn"
-    >
-      📷
-    </button>
-
-    <button
-      id="shareBtn"
-      class="controlBtn"
-    >
-      🖥️
-    </button>
-
-    <button
-      id="leaveBtn"
-      class="controlBtn leave"
-    >
-      ❌
-    </button>
-
-  </div>
-
-  <!-- SCRIPTS -->
+  <script src="/socket.io/socket.io.js"></script>
 
   <script
     type="module"
-    src="firebase.js"
+    src="./rtc/socket.js"
   ></script>
 
-  <script src="socket.js"></script>
-
-  <script src="webrtc.js"></script>
-
-  <script src="ui.js"></script>
+  <script
+    type="module"
+    src="./rtc/webrtc.js"
+  ></script>
 
   <script
     type="module"
-    src="app.js"
+    src="./rtc/ui.js"
   ></script>
 
 </body>

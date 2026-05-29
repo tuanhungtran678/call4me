@@ -1,300 +1,427 @@
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-const cors = require("cors");
-const path = require("path");
+const express =
+  require("express");
 
-const app = express();
+const http =
+  require("http");
 
-app.use(cors());
+const {
+  Server
+} =
+  require("socket.io");
 
-app.use(express.static(__dirname));
+const path =
+  require("path");
 
-app.get("/", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "index.html")
+/* =========================================
+   APP
+========================================= */
+
+const app =
+  express();
+
+const server =
+  http.createServer(
+    app
   );
-});
 
-const server = http.createServer(app);
+const io =
+  new Server(
+    server,
+    {
+      cors:{
+        origin:"*"
+      }
+    }
+  );
 
-const io = new Server(server, {
-  cors: {
-    origin: "*"
-  }
-});
+/* =========================================
+   STATIC
+========================================= */
 
-/* ROOMS */
+app.use(
+  express.static(
+    path.join(
+      __dirname,
+      "public"
+    )
+  )
+);
+
+/* =========================================
+   ROOMS
+========================================= */
 
 const rooms = {};
 
-/*
-rooms = {
-  roomId: [
-    {
-      socketId,
-      username
-    }
-  ]
-}
-*/
+/* =========================================
+   SOCKET
+========================================= */
 
-io.on("connection", socket => {
+io.on(
+  "connection",
 
-  console.log(
-    "User connected:",
-    socket.id
-  );
-
-  let currentRoom = null;
-
-  let currentUsername = null;
-
-  /* JOIN ROOM */
-
-  socket.on("join-room", data => {
-
-    const {
-      roomId,
-      username
-    } = data;
-
-    currentRoom = roomId;
-
-    currentUsername = username;
-
-    socket.join(roomId);
-
-    if (!rooms[roomId]) {
-      rooms[roomId] = [];
-    }
-
-    rooms[roomId].push({
-      socketId: socket.id,
-      username
-    });
+  socket => {
 
     console.log(
-      username +
-      " joined room " +
-      roomId
-    );
-
-    /* SEND USERS TO NEW USER */
-
-    const otherUsers =
-      rooms[roomId]
-        .filter(
-          user =>
-            user.socketId !== socket.id
-        );
-
-    socket.emit(
-      "all-users",
-      otherUsers
-    );
-
-    /* TELL OTHERS */
-
-    socket.to(roomId).emit(
-      "user-joined",
-      {
-        socketId: socket.id,
-        username
-      }
-    );
-
-    /* UPDATE COUNTS */
-
-    io.to(roomId).emit(
-      "room-users",
-      rooms[roomId]
-    );
-
-  });
-
-  /* OFFER */
-
-  socket.on(
-    "offer",
-    payload => {
-
-      io.to(payload.target).emit(
-        "offer",
-        {
-          sdp: payload.sdp,
-          caller: socket.id,
-          username: currentUsername
-        }
-      );
-
-    }
-  );
-
-  /* ANSWER */
-
-  socket.on(
-    "answer",
-    payload => {
-
-      io.to(payload.target).emit(
-        "answer",
-        {
-          sdp: payload.sdp,
-          responder: socket.id
-        }
-      );
-
-    }
-  );
-
-  /* ICE */
-
-  socket.on(
-    "ice-candidate",
-    payload => {
-
-      io.to(payload.target).emit(
-        "ice-candidate",
-        {
-          candidate:
-            payload.candidate,
-          from: socket.id
-        }
-      );
-
-    }
-  );
-
-  /* CHAT */
-
-  socket.on(
-    "send-message",
-    message => {
-
-      if (!currentRoom) return;
-
-      io.to(currentRoom).emit(
-        "new-message",
-        {
-          username:
-            currentUsername,
-          text: message,
-          time:
-            new Date()
-              .toLocaleTimeString()
-        }
-      );
-
-    }
-  );
-
-  /* TYPING */
-
-  socket.on(
-    "typing",
-    isTyping => {
-
-      if (!currentRoom) return;
-
-      socket.to(currentRoom).emit(
-        "user-typing",
-        {
-          username:
-            currentUsername,
-          isTyping
-        }
-      );
-
-    }
-  );
-
-  /* REACTIONS */
-
-  socket.on(
-    "reaction",
-    emoji => {
-
-      if (!currentRoom) return;
-
-      io.to(currentRoom).emit(
-        "reaction",
-        {
-          username:
-            currentUsername,
-          emoji
-        }
-      );
-
-    }
-  );
-
-  /* DISCONNECT */
-
-  socket.on("disconnect", () => {
-
-    console.log(
-      "Disconnected:",
+      "⚡ Connected:",
       socket.id
     );
 
-    if (
-      currentRoom &&
-      rooms[currentRoom]
-    ) {
+    /* =========================================
+       JOIN ROOM
+    ========================================= */
 
-      rooms[currentRoom] =
-        rooms[currentRoom]
-          .filter(
-            user =>
-              user.socketId !== socket.id
-          );
+    socket.on(
+      "join-room",
 
-      socket.to(currentRoom).emit(
-        "user-left",
-        {
-          socketId: socket.id,
-          username: currentUsername
+      ({
+        roomId,
+        username
+      }) => {
+
+        socket.join(
+          roomId
+        );
+
+        socket.roomId =
+          roomId;
+
+        socket.username =
+          username ||
+          "Anonymous";
+
+        /* CREATE ROOM */
+
+        if (
+          !rooms[roomId]
+        ) {
+
+          rooms[roomId] = {
+            users:[]
+          };
+
         }
-      );
 
-      io.to(currentRoom).emit(
-        "room-users",
-        rooms[currentRoom]
-      );
+        /* ADD USER */
 
-      /* DELETE EMPTY ROOM */
+        rooms[roomId]
+          .users
+          .push({
 
-      if (
-        rooms[currentRoom]
-          .length === 0
-      ) {
+            id:socket.id,
 
-        delete rooms[currentRoom];
+            username:
+              socket.username
 
-        console.log(
-          "Deleted empty room:",
-          currentRoom
+          });
+
+        /* SEND CURRENT USERS */
+
+        io.to(roomId).emit(
+          "participants-update",
+
+          rooms[roomId]
+            .users
+        );
+
+        /* JOIN MESSAGE */
+
+        socket.to(roomId).emit(
+          "system-message",
+
+          {
+            text:
+              `👋 ${socket.username} joined`
+          }
+        );
+
+        /* ROOM INFO */
+
+        io.to(roomId).emit(
+          "room-info",
+
+          {
+            roomId,
+
+            count:
+              rooms[roomId]
+                .users.length
+          }
         );
 
       }
+    );
 
-    }
+    /* =========================================
+       CHAT
+    ========================================= */
 
-  });
+    socket.on(
+      "chat-message",
 
-});
+      data => {
 
-/* START */
+        if (
+          !socket.roomId
+        ) return;
+
+        io.to(
+          socket.roomId
+        ).emit(
+          "chat-message",
+
+          {
+            id:socket.id,
+
+            username:
+              socket.username,
+
+            message:
+              data.message
+
+          }
+        );
+
+      }
+    );
+
+    /* =========================================
+       TYPING
+    ========================================= */
+
+    socket.on(
+      "typing",
+
+      state => {
+
+        socket.to(
+          socket.roomId
+        ).emit(
+          "typing",
+
+          {
+            username:
+              socket.username,
+
+            state
+          }
+        );
+
+      }
+    );
+
+    /* =========================================
+       REACTIONS
+    ========================================= */
+
+    socket.on(
+      "reaction",
+
+      emoji => {
+
+        io.to(
+          socket.roomId
+        ).emit(
+          "reaction",
+
+          {
+            emoji,
+
+            username:
+              socket.username
+          }
+        );
+
+      }
+    );
+
+    /* =========================================
+       SPEAKING
+    ========================================= */
+
+    socket.on(
+      "speaking",
+
+      speaking => {
+
+        socket.to(
+          socket.roomId
+        ).emit(
+          "speaking",
+
+          {
+            id:socket.id,
+
+            username:
+              socket.username,
+
+            speaking
+          }
+        );
+
+      }
+    );
+
+    /* =========================================
+       WEBRTC SIGNALING
+    ========================================= */
+
+    socket.on(
+      "offer",
+
+      data => {
+
+        socket.to(
+          data.roomId
+        ).emit(
+          "offer",
+
+          data
+        );
+
+      }
+    );
+
+    socket.on(
+      "answer",
+
+      data => {
+
+        socket.to(
+          data.roomId
+        ).emit(
+          "answer",
+
+          data
+        );
+
+      }
+    );
+
+    socket.on(
+      "ice-candidate",
+
+      data => {
+
+        socket.to(
+          data.roomId
+        ).emit(
+          "ice-candidate",
+
+          data
+        );
+
+      }
+    );
+
+    /* =========================================
+       DISCONNECT
+    ========================================= */
+
+    socket.on(
+      "disconnect",
+
+      () => {
+
+        console.log(
+          "❌ Disconnected:",
+          socket.id
+        );
+
+        const roomId =
+          socket.roomId;
+
+        if (
+          !roomId ||
+          !rooms[roomId]
+        ) return;
+
+        /* REMOVE USER */
+
+        rooms[roomId]
+          .users =
+          rooms[roomId]
+            .users
+            .filter(
+              user =>
+                user.id !==
+                socket.id
+            );
+
+        /* UPDATE USERS */
+
+        io.to(roomId).emit(
+          "participants-update",
+
+          rooms[roomId]
+            .users
+        );
+
+        /* LEAVE MESSAGE */
+
+        socket.to(roomId).emit(
+          "system-message",
+
+          {
+            text:
+              `👋 ${socket.username} left`
+          }
+        );
+
+        /* ROOM INFO */
+
+        io.to(roomId).emit(
+          "room-info",
+
+          {
+            roomId,
+
+            count:
+              rooms[roomId]
+                .users.length
+          }
+        );
+
+        /* DELETE EMPTY ROOM */
+
+        if (
+          rooms[roomId]
+            .users.length === 0
+        ) {
+
+          delete rooms[
+            roomId
+          ];
+
+          console.log(
+            "🗑️ Room deleted:",
+            roomId
+          );
+
+        }
+
+      }
+    );
+
+  }
+);
+
+/* =========================================
+   START
+========================================= */
 
 const PORT =
-  process.env.PORT || 3001;
+  process.env.PORT ||
+  3000;
 
-server.listen(PORT, () => {
+server.listen(
+  PORT,
 
-  console.log(
-    "Call4me server running on port",
-    PORT
-  );
+  () => {
 
-});
+    console.log(
+      `🚀 Server running on ${PORT}`
+    );
+
+  }
+);

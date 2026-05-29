@@ -1,264 +1,359 @@
-const socket = io();
+/* =========================================
+   SOCKET
+========================================= */
 
-/* SOCKET STATUS */
+export const socket =
+  io();
 
-socket.on("connect", () => {
+/* =========================================
+   ROOM
+========================================= */
 
-  console.log(
-    "Connected:",
-    socket.id
+const roomId =
+  location.hash.replace(
+    "#",
+    ""
+  ) || "public-room";
+
+/* =========================================
+   USERNAME
+========================================= */
+
+const username =
+  "User-" +
+  Math.floor(
+    Math.random() * 9999
   );
 
-  showSystemMessage(
-    "Connected to server 🔥"
-  );
+/* =========================================
+   JOIN
+========================================= */
 
-});
+socket.emit(
+  "join-room",
 
-socket.on("disconnect", () => {
+  {
+    roomId,
+    username
+  }
+);
 
-  console.log(
-    "Disconnected"
-  );
+/* =========================================
+   CHAT
+========================================= */
 
-  showSystemMessage(
-    "Disconnected from server 💀"
-  );
-
-});
-
-/* JOIN */
-
-function joinRoom() {
+export function sendChatMessage(
+  message
+) {
 
   socket.emit(
-    "join-room",
+    "chat-message",
+
     {
-      roomId,
-      username
+      message
     }
   );
 
 }
 
-/* ALL USERS */
+/* =========================================
+   TYPING
+========================================= */
 
-socket.on(
-  "all-users",
-  users => {
+export function sendTyping(
+  state
+) {
 
-    console.log(
-      "Users in room:",
-      users
-    );
+  socket.emit(
+    "typing",
+    state
+  );
 
-    users.forEach(user => {
+}
 
-      createPeerConnection(
-        user.socketId,
-        true
-      );
+/* =========================================
+   REACTIONS
+========================================= */
 
-      createVideoCard(
-        user.socketId,
-        user.username
-      );
+export function sendReaction(
+  emoji
+) {
 
-    });
+  socket.emit(
+    "reaction",
+    emoji
+  );
 
-  }
-);
+}
 
-/* USER JOINED */
+/* =========================================
+   SPEAKING
+========================================= */
 
-socket.on(
-  "user-joined",
-  user => {
+export function sendSpeaking(
+  state
+) {
 
-    console.log(
-      "User joined:",
-      user
-    );
+  socket.emit(
+    "speaking",
+    state
+  );
 
-    showSystemMessage(
-      user.username +
-      " joined the room"
-    );
+}
 
-    document
-      .getElementById(
-        "joinSound"
-      )
-      .play();
+/* =========================================
+   WEBRTC
+========================================= */
 
-    createVideoCard(
-      user.socketId,
-      user.username
-    );
+export function sendOffer(
+  offer
+) {
 
-  }
-);
+  socket.emit(
+    "offer",
 
-/* ROOM USERS */
-
-socket.on(
-  "room-users",
-  users => {
-
-    updateParticipantCount(
-      users.length
-    );
-
-    updateOnlineCount(
-      users.length
-    );
-
-  }
-);
-
-/* OFFER */
-
-socket.on(
-  "offer",
-  async payload => {
-
-    await handleOffer(
-      payload
-    );
-
-  }
-);
-
-/* ANSWER */
-
-socket.on(
-  "answer",
-  async payload => {
-
-    await handleAnswer(
-      payload
-    );
-
-  }
-);
-
-/* ICE */
-
-socket.on(
-  "ice-candidate",
-  async payload => {
-
-    await handleIceCandidate(
-      payload
-    );
-
-  }
-);
-
-/* USER LEFT */
-
-socket.on(
-  "user-left",
-  data => {
-
-    console.log(
-      "User left:",
-      data
-    );
-
-    showSystemMessage(
-      data.username +
-      " left the room"
-    );
-
-    document
-      .getElementById(
-        "leaveSound"
-      )
-      .play();
-
-    removeVideoCard(
-      data.socketId
-    );
-
-    removePeer(
-      data.socketId
-    );
-
-  }
-);
-
-/* CHAT */
-
-socket.on(
-  "new-message",
-  data => {
-
-    addMessage(
-      data.username,
-      data.text,
-      data.time
-    );
-
-  }
-);
-
-/* TYPING */
-
-socket.on(
-  "user-typing",
-  data => {
-
-    const typingText =
-      document.getElementById(
-        "typingText"
-      );
-
-    if (data.isTyping) {
-
-      typingText.innerText =
-        data.username +
-        " is typing...";
-
-    } else {
-
-      typingText.innerText =
-        "";
-
+    {
+      roomId,
+      offer
     }
+  );
+
+}
+
+export function sendAnswer(
+  answer
+) {
+
+  socket.emit(
+    "answer",
+
+    {
+      roomId,
+      answer
+    }
+  );
+
+}
+
+export function sendIceCandidate(
+  candidate
+) {
+
+  socket.emit(
+    "ice-candidate",
+
+    {
+      roomId,
+      candidate
+    }
+  );
+
+}
+
+/* =========================================
+   EVENTS
+========================================= */
+
+socket.on(
+  "participants-update",
+
+  users => {
+
+    window.dispatchEvent(
+
+      new CustomEvent(
+        "participants-update",
+
+        {
+          detail:users
+        }
+      )
+
+    );
 
   }
 );
 
-/* REACTIONS */
+socket.on(
+  "chat-message",
+
+  data => {
+
+    window.dispatchEvent(
+
+      new CustomEvent(
+        "chat-message",
+
+        {
+          detail:data
+        }
+      )
+
+    );
+
+  }
+);
+
+socket.on(
+  "typing",
+
+  data => {
+
+    window.dispatchEvent(
+
+      new CustomEvent(
+        "typing",
+
+        {
+          detail:data
+        }
+      )
+
+    );
+
+  }
+);
 
 socket.on(
   "reaction",
+
   data => {
 
-    showReaction(
-      data.username,
-      data.emoji
+    window.dispatchEvent(
+
+      new CustomEvent(
+        "reaction",
+
+        {
+          detail:data
+        }
+      )
+
     );
 
   }
 );
 
-/* RECONNECT */
+socket.on(
+  "system-message",
 
-socket.io.on(
-  "reconnect",
-  () => {
+  data => {
 
-    console.log(
-      "Reconnected"
+    window.dispatchEvent(
+
+      new CustomEvent(
+        "system-message",
+
+        {
+          detail:data
+        }
+      )
+
     );
 
-    showSystemMessage(
-      "Reconnected 🔥"
+  }
+);
+
+socket.on(
+  "room-info",
+
+  data => {
+
+    window.dispatchEvent(
+
+      new CustomEvent(
+        "room-info",
+
+        {
+          detail:data
+        }
+      )
+
     );
 
-    joinRoom();
+  }
+);
+
+socket.on(
+  "speaking",
+
+  data => {
+
+    window.dispatchEvent(
+
+      new CustomEvent(
+        "speaking",
+
+        {
+          detail:data
+        }
+      )
+
+    );
+
+  }
+);
+
+/* =========================================
+   WEBRTC EVENTS
+========================================= */
+
+socket.on(
+  "offer",
+
+  data => {
+
+    window.dispatchEvent(
+
+      new CustomEvent(
+        "offer",
+
+        {
+          detail:data
+        }
+      )
+
+    );
+
+  }
+);
+
+socket.on(
+  "answer",
+
+  data => {
+
+    window.dispatchEvent(
+
+      new CustomEvent(
+        "answer",
+
+        {
+          detail:data
+        }
+      )
+
+    );
+
+  }
+);
+
+socket.on(
+  "ice-candidate",
+
+  data => {
+
+    window.dispatchEvent(
+
+      new CustomEvent(
+        "ice-candidate",
+
+        {
+          detail:data
+        }
+      )
+
+    );
 
   }
 );
