@@ -1,0 +1,273 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  min-height:100vh;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  overflow:hidden;
+
+  background:
+    radial-gradient(
+      circle at top left,
+      #1e2b4d,
+      #0d0f16 45%
+    );
+
+  color:white;
+
+  position:relative;
+}
+
+/* BACKGROUND BLOBS */
+
+.bgBlur{
+  position:absolute;
+
+  width:420px;
+  height:420px;
+
+  border-radius:50%;
+
+  filter:blur(100px);
+
+  opacity:.45;
+
+  animation:
+    floatBlob 10s infinite ease-in-out;
+}
+
+.bg1{
+  background:#00d9ff;
+
+  top:-120px;
+  left:-120px;
+}
+
+.bg2{
+  background:#6a5cff;
+
+  bottom:-120px;
+  right:-120px;
+
+  animation-delay:2s;
+}
+
+.bg3{
+  background:#ff4fd8;
+
+  top:50%;
+  left:50%;
+
+  transform:
+    translate(-50%,-50%);
+
+  animation-delay:4s;
+}
+
+/* CARD */
+
+.loginContainer{
+  width:420px;
+
+  padding:42px;
+
+  border-radius:32px;
+
+  background:
+    rgba(15,15,25,.72);
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  backdrop-filter:blur(22px);
+
+  box-shadow:
+    0 0 50px rgba(0,0,0,.35);
+
+  z-index:2;
+
+  text-align:center;
+}
+
+/* LOGO */
+
+.logo{
+  font-size:52px;
+  font-weight:900;
+
+  margin-bottom:10px;
+
+  background:
+    linear-gradient(
+      45deg,
+      #00d9ff,
+      #6a5cff,
+      #ff4fd8
+    );
+
+  background-clip:text;
+  -webkit-background-clip:text;
+
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+  opacity:.72;
+
+  margin-bottom:40px;
+
+  line-height:1.5;
+}
+
+/* BUTTONS */
+
+.loginButtons{
+  display:flex;
+  flex-direction:column;
+
+  gap:18px;
+}
+
+.loginBtn{
+  width:100%;
+
+  border:none;
+
+  border-radius:18px;
+
+  padding:18px 22px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  gap:14px;
+
+  font-size:16px;
+  font-weight:bold;
+
+  color:white;
+
+  cursor:pointer;
+
+  transition:.25s;
+
+  position:relative;
+
+  overflow:hidden;
+}
+
+/* GOOGLE */
+
+.google{
+  background:
+    linear-gradient(
+      45deg,
+      #4285F4,
+      #34A853
+    );
+}
+
+/* GITHUB */
+
+.github{
+  background:
+    linear-gradient(
+      45deg,
+      #24292e,
+      #444
+    );
+}
+
+.loginBtn:hover{
+  transform:
+    translateY(-3px)
+    scale(1.02);
+
+  box-shadow:
+    0 0 30px rgba(255,255,255,.18);
+}
+
+.loginBtn:active{
+  transform:scale(.98);
+}
+
+.icon{
+  font-size:22px;
+}
+
+/* LOADING */
+
+.loading{
+  margin-top:26px;
+
+  min-height:24px;
+
+  opacity:.7;
+
+  font-size:14px;
+}
+
+/* FOOTER */
+
+.footer{
+  margin-top:38px;
+
+  opacity:.5;
+
+  font-size:13px;
+
+  line-height:1.5;
+}
+
+/* ANIMATIONS */
+
+@keyframes floatBlob{
+
+  0%{
+    transform:
+      translateY(0px);
+  }
+
+  50%{
+    transform:
+      translateY(-30px);
+  }
+
+  100%{
+    transform:
+      translateY(0px);
+  }
+
+}
+
+/* MOBILE */
+
+@media(max-width:520px){
+
+  .loginContainer{
+    width:92%;
+
+    padding:30px 24px;
+  }
+
+  .logo{
+    font-size:42px;
+  }
+
+  .loginBtn{
+    padding:16px 18px;
+
+    font-size:15px;
+  }
+
+}
