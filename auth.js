@@ -2,7 +2,7 @@ import {
   auth,
   db
 }
-from "./firebase.js";
+from "./home-screen/firebase.js";
 
 import {
   GoogleAuthProvider,
