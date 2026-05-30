@@ -3,19 +3,19 @@
 
 <head>
 
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
 
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
-  />
+  >
 
   <title>Call4me Home</title>
 
   <link
     rel="stylesheet"
-    href="home.css"
-  />
+    href="./home.css"
+  >
 
 </head>
 
@@ -23,321 +23,171 @@
 
   <!-- BACKGROUND -->
 
-  <div class="bgBlob blob1"></div>
-  <div class="bgBlob blob2"></div>
-  <div class="bgBlob blob3"></div>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
 
-  <!-- APP -->
+  <!-- SIDEBAR -->
 
-  <div class="appLayout">
+  <aside class="sidebar">
 
-    <!-- SIDEBAR -->
+    <div class="logo">
+      🚀 Call4me
+    </div>
 
-    <aside class="sidebar">
+    <nav>
 
-      <!-- LOGO -->
-
-      <div class="logo">
-        Call4me
-      </div>
-
-      <!-- PROFILE -->
-
-      <div class="profileCard">
-
-        <img
-          id="userAvatar"
-          class="avatar"
-          src=""
-          alt="avatar"
-        />
-
-        <div class="profileInfo">
-
-          <div
-            id="username"
-            class="username"
-          >
-            User
-          </div>
-
-          <div class="status">
-            🟢 Online
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- MENU -->
-
-      <nav class="menu">
-
-        <button class="menuBtn active">
-          🏠 Home
-        </button>
-
-        <button class="menuBtn">
-          👥 Friends
-        </button>
-
-        <button class="menuBtn">
-          📞 Calls
-        </button>
-
-        <button class="menuBtn">
-          🔔 Notifications
-        </button>
-
-        <button class="menuBtn">
-          ⚙️ Settings
-        </button>
-
-      </nav>
-
-      <!-- LOGOUT -->
-
-      <button
-        id="logoutBtn"
-        class="logoutBtn"
-      >
-        Logout
+      <button class="navBtn active">
+        🏠 Home
       </button>
 
-    </aside>
+      <button class="navBtn">
+        👥 Friends
+      </button>
 
-    <!-- MAIN -->
+      <button class="navBtn">
+        💬 Messages
+      </button>
 
-    <main class="mainContent">
+      <button class="navBtn">
+        📞 Calls
+      </button>
 
-      <!-- HERO -->
+      <button class="navBtn">
+        ⚙ Settings
+      </button>
 
-      <section class="heroCard">
+    </nav>
 
-        <div class="heroText">
+  </aside>
 
-          <h1>
-            Welcome to Call4me 🔥
-          </h1>
+  <!-- MAIN -->
 
-          <p>
-            Realtime communication
-            platform powered by
-            WebRTC + Firebase
-          </p>
+  <main class="main">
 
-        </div>
+    <!-- PROFILE -->
 
-        <div class="heroActions">
+    <section class="profileCard">
 
-          <!-- CREATE -->
+      <img
+        id="userAvatar"
+        src=""
+        alt="Avatar"
+      >
 
-          <button
-            id="createRoomBtn"
-            class="heroBtn primary"
-          >
-            ➕ Create Room
-          </button>
+      <div>
 
-          <!-- JOIN -->
+        <h2 id="displayName">
+          Loading...
+        </h2>
 
-          <button
-            id="joinRoomBtn"
-            class="heroBtn secondary"
-          >
-            🚪 Join Room
-          </button>
+        <p id="email">
+          Loading...
+        </p>
 
-        </div>
-
-      </section>
-
-      <!-- ROOM JOIN -->
-
-      <section class="joinCard">
-
-        <div class="sectionTitle">
-          Join Existing Room
-        </div>
-
-        <div class="joinArea">
-
-          <input
-            type="text"
-            id="roomInput"
-            placeholder="Enter room ID..."
-          />
-
-          <button
-            id="joinBtn"
-          >
-            Join
-          </button>
-
-        </div>
-
-      </section>
-
-      <!-- RECENT CALLS -->
-
-      <section class="recentCard">
-
-        <div class="sectionTitle">
-          Recent Calls
-        </div>
-
-        <div
-          class="recentList"
-          id="recentList"
-        >
-
-          <!-- ITEM -->
-
-          <div class="recentItem">
-
-            <div class="recentAvatar">
-              🔥
-            </div>
-
-            <div class="recentInfo">
-
-              <div class="recentName">
-                WebRTC Team
-              </div>
-
-              <div class="recentMeta">
-                Yesterday • 42 mins
-              </div>
-
-            </div>
-
-            <button class="rejoinBtn">
-              Rejoin
-            </button>
-
-          </div>
-
-          <!-- ITEM -->
-
-          <div class="recentItem">
-
-            <div class="recentAvatar">
-              💻
-            </div>
-
-            <div class="recentInfo">
-
-              <div class="recentName">
-                Dev Meeting
-              </div>
-
-              <div class="recentMeta">
-                Today • 18 mins
-              </div>
-
-            </div>
-
-            <button class="rejoinBtn">
-              Rejoin
-            </button>
-
-          </div>
-
-        </div>
-
-      </section>
-
-    </main>
-
-    <!-- RIGHT PANEL -->
-
-    <aside class="rightPanel">
-
-      <!-- ONLINE USERS -->
-
-      <div class="panelCard">
-
-        <div class="panelTitle">
-          Online Users 👥
-        </div>
-
-        <div class="onlineList">
-
-          <div class="onlineUser">
-
-            <div class="onlineAvatar">
-              😎
-            </div>
-
-            <div>
-              Hung
-            </div>
-
-          </div>
-
-          <div class="onlineUser">
-
-            <div class="onlineAvatar">
-              🔥
-            </div>
-
-            <div>
-              DevUser
-            </div>
-
-          </div>
-
-          <div class="onlineUser">
-
-            <div class="onlineAvatar">
-              💀
-            </div>
-
-            <div>
-              WebRTC Master
-            </div>
-
-          </div>
-
-        </div>
+        <span class="onlineBadge">
+          🟢 Online
+        </span>
 
       </div>
 
-      <!-- NOTIFICATIONS -->
+    </section>
 
-      <div class="panelCard">
+    <!-- QUICK ACTIONS -->
 
-        <div class="panelTitle">
-          Notifications 🔔
-        </div>
+    <section class="quickActions">
 
-        <div class="notificationList">
+      <button id="createRoomBtn">
+        🎥 Create Room
+      </button>
 
-          <div class="notificationItem">
-            🔥 New update available
-          </div>
+      <button id="joinRoomBtn">
+        🔗 Join Room
+      </button>
 
-          <div class="notificationItem">
-            👥 3 friends online
-          </div>
+      <button id="friendsBtn">
+        👥 Friends
+      </button>
 
-          <div class="notificationItem">
-            🚀 Call4me servers stable
-          </div>
+    </section>
 
-        </div>
+    <!-- STATS -->
+
+    <section class="statsGrid">
+
+      <div class="statCard">
+
+        <h3>
+          Rooms
+        </h3>
+
+        <p>
+          0
+        </p>
 
       </div>
 
-    </aside>
+      <div class="statCard">
 
-  </div>
+        <h3>
+          Friends
+        </h3>
 
-  <!-- SCRIPT -->
+        <p>
+          0
+        </p>
+
+      </div>
+
+      <div class="statCard">
+
+        <h3>
+          Messages
+        </h3>
+
+        <p>
+          0
+        </p>
+
+      </div>
+
+    </section>
+
+    <!-- RECENT -->
+
+    <section class="recentCard">
+
+      <h2>
+        Recent Activity
+      </h2>
+
+      <div class="activity">
+
+        🚀 Welcome to Call4me
+
+      </div>
+
+      <div class="activity">
+
+        🎉 Account connected
+
+      </div>
+
+    </section>
+
+    <!-- LOGOUT -->
+
+    <button
+      id="logoutBtn"
+      class="logoutBtn"
+    >
+      🚪 Đăng xuất
+    </button>
+
+  </main>
 
   <script
     type="module"
-    src="home.js"
+    src="./home.js"
   ></script>
 
 </body>
