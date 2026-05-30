@@ -169,3 +169,19 @@ document.addEventListener(
 
   }
 );
+
+const dialBtn =
+  document.getElementById(
+    "dialBtn"
+  );
+
+if (dialBtn) {
+
+  dialBtn.onclick = () => {
+
+    location.href =
+      "../dial/dial.html";
+
+  };
+
+}
