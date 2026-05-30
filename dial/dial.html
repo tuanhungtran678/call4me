@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Call4me Dial</title>
+
+  <link rel="stylesheet" href="./dial.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="dial-card">
+
+      <h1>📞 Dial</h1>
+
+      <input
+        id="numberInput"
+        type="text"
+        placeholder="Nhập số Call4me..."
+        readonly
+      >
+
+      <div class="keypad">
+
+        <button data-key="1">1</button>
+        <button data-key="2">2</button>
+        <button data-key="3">3</button>
+
+        <button data-key="4">4</button>
+        <button data-key="5">5</button>
+        <button data-key="6">6</button>
+
+        <button data-key="7">7</button>
+        <button data-key="8">8</button>
+        <button data-key="9">9</button>
+
+        <button data-key="*">*</button>
+        <button data-key="0">0</button>
+        <button data-key="#">#</button>
+
+      </div>
+
+      <div class="actions">
+
+        <button id="deleteBtn">
+          ⌫
+        </button>
+
+        <button id="callBtn">
+          📞 Call
+        </button>
+
+      </div>
+
+      <div id="status">
+        Sẵn sàng gọi...
+      </div>
+
+    </div>
+
+  </div>
+
+  <script type="module" src="./dial.js"></script>
+
+</body>
+</html>
