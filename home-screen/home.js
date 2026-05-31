@@ -92,3 +92,53 @@ logoutBtn.onclick =
     }
 
   };
+
+document
+  .getElementById("dialBtn")
+  ?.addEventListener(
+    "click",
+    () => {
+      location.href =
+        "../dial/dial.html";
+    }
+  );
+
+document
+  .getElementById("friendsBtn")
+  ?.addEventListener(
+    "click",
+    () => {
+      location.href =
+        "../friends/friends.html";
+    }
+  );
+
+document
+  .getElementById("messagesBtn")
+  ?.addEventListener(
+    "click",
+    () => {
+      location.href =
+        "../messages/messages.html";
+    }
+  );
+
+document
+  .getElementById("callsBtn")
+  ?.addEventListener(
+    "click",
+    () => {
+      location.href =
+        "../calls/calls.html";
+    }
+  );
+
+document
+  .getElementById("settingsBtn")
+  ?.addEventListener(
+    "click",
+    () => {
+      location.href =
+        "../settings/settings.html";
+    }
+  );

@@ -1,0 +1,62 @@
+body{
+
+  margin:0;
+
+  height:100vh;
+
+  display:flex;
+
+  justify-content:center;
+  align-items:center;
+
+  background:#070b16;
+
+  color:white;
+
+  font-family:sans-serif;
+}
+
+.call-screen{
+
+  text-align:center;
+}
+
+#avatar{
+
+  width:180px;
+  height:180px;
+
+  border-radius:50%;
+}
+
+.controls{
+
+  margin-top:40px;
+
+  display:flex;
+
+  gap:20px;
+
+  justify-content:center;
+}
+
+button{
+
+  border:none;
+
+  width:80px;
+  height:80px;
+
+  border-radius:50%;
+
+  font-size:24px;
+
+  cursor:pointer;
+}
+
+#endBtn{
+
+  background:#ff4d6d;
+
+  color:white;
+}
