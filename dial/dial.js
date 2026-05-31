@@ -101,16 +101,12 @@ callBtn.addEventListener(
        MOCK CALL
     ===================== */
 
-    setTimeout(
-      () => {
+setTimeout(() => {
 
-        status.textContent =
-          `⌛ Đang chờ ${number} trả lời...`;
+  location.href =
+    `../in-call/call.html?number=${encodeURIComponent(number)}`;
 
-      },
-
-      1500
-    );
+}, 1000);
 
   }
 );
